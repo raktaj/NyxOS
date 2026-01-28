@@ -1,0 +1,15 @@
+{
+  "/": {
+    "home": {
+      "root": {
+        "readme.txt": "Welcome to NyxOS."
+      }
+    },
+    "etc": {
+      "motd": "NyxOS v0.1 'Tenebris'"
+    },
+    "bin": {
+      "echo": "builtin"
+    }
+  }
+}
