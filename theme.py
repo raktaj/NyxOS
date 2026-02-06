@@ -1,12 +1,13 @@
-from colorama import Fore, Style, init
+# theme.py
+from rich.style import Style
 
-init(autoreset=True)
+PROMPT = Style(color="cyan", bold=True)
+MUTED  = Style(color="bright_black")
+TEXT   = Style(color="white")
+ERROR  = Style(color="red", bold=True) 
+SUCCESS = Style(color="green")
+BANNER = Style(color="magenta", bold=True)
 
-BANNER  = Fore.MAGENTA + Style.BRIGHT
-PROMPT  = Fore.CYAN + Style.BRIGHT
-TEXT    = Fore.WHITE
-MUTED   = Fore.WHITE + Style.DIM
-SUCCESS = Fore.GREEN + Style.BRIGHT
-WARNING = Fore.YELLOW + Style.BRIGHT
-ERROR   = Fore.RED + Style.BRIGHT
-RESET   = Style.RESET_ALL
+CWD_PARENT  = Style(color="magenta")
+CWD_CURRENT = Style(color="magenta", bold=True)
+CWD_SEP = Style(color="magenta")

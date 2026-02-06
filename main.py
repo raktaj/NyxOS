@@ -1,26 +1,41 @@
 # main.py
-import os
+
 import sys
 import getpass
+
+from rich.panel import Panel
+from rich.console import Console
+from rich.align import Align
 
 from theme import BANNER, SUCCESS, ERROR
 from auth import get_user, verify_password
 from shell import run_shell
 
-def clear_screen():
-    os.system("cls" if os.name == "nt" else "clear")
+console = Console()
 
 def boot():
-    clear_screen()
-    print(f"{BANNER}NyxOS v0.1")
+    console.clear()
+
+    banner_text = Align.center(
+        "NyxOS v0.2\nUmbra",
+        vertical="middle"
+    )
+
+    panel = Panel(
+        banner_text,
+        border_style=BANNER,
+        expand=False
+    )
+
+    console.print(panel, justify="center")
 
 def login():
-    username = input("Username: ")
+    username = console.input("Username: ")
 
     try:
         user = get_user(username)
     except KeyError:
-        print(f"{ERROR}Unknown user")
+        console.print("Unknown user", style=ERROR)
         sys.exit(1)
 
     password = getpass.getpass("Password: ")
@@ -30,10 +45,10 @@ def login():
         user["salt"],
         user["hash"]
     ):
-        print(f"{ERROR}Login failed!")
+        console.print("Login failed!", style=ERROR)
         sys.exit(1)
 
-    print(f"{SUCCESS}Login successful!")
+    console.print("Login successful!", style=SUCCESS)
     return username
 
 def main():

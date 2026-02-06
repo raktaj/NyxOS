@@ -6,7 +6,7 @@
       }
     },
     "etc": {
-      "motd": "NyxOS v0.1 'Tenebris'"
+      "motd": "NyxOS v0.2 'Umbra'"
     },
     "bin": {
       "echo": "builtin"

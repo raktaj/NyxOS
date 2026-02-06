@@ -1,110 +1,89 @@
-from theme import PROMPT, MUTED, TEXT, ERROR, RESET
-from fs import FileSystem
+from rich.console import Console
+from rich.text import Text
 
+from theme import PROMPT, ERROR, CWD_PARENT, CWD_CURRENT, CWD_SEP
+from commands import COMMANDS
+from context import CommandContext
+from fs import FileSystem
+from shell_exceptions import ShellExit
+
+console = Console()
 fs = FileSystem()
 
+def format_cwd(path):
+    text = Text()
+    parts = [p for p in path.split("/") if p]
+
+    if not parts:
+        text.append("/", style=CWD_CURRENT)
+        return text
+
+    # Parent path
+    if len(parts) > 1:
+        for part in parts[:-1]:
+            text.append("/", style=CWD_SEP)
+            text.append(part, style=CWD_PARENT)
+        text.append("/", style=CWD_SEP)
+    else:
+        text.append("/", style=CWD_SEP)
+
+    # Current dir
+    text.append(parts[-1], style=CWD_CURRENT)
+    return text
+
+def prompt(username, cwd):
+    console.print(f"{username}@NyxOS", style=PROMPT, end="")
+    console.print(format_cwd(cwd), end="")
+    symbol = "#" if username == "root" else "$"
+    return console.input(f"{symbol} ")
+
 def run_shell(username):
+    ctx = CommandContext(
+        fs=fs,
+        console=console,
+        username=username
+    )
+
     while True:
-        cmd = input(f"{PROMPT}{username}@NyxOS{MUTED}:{fs.pwd()}{RESET}$ ")
-        parts = cmd.split()
+        line = prompt(username, fs.pwd())
+
+        # --- parse redirection ---
+        redirect_target = None
+        if ">" in line:
+            command_part, _, redirect_target = line.partition(">")
+            redirect_target = redirect_target.strip()
+            parts = command_part.split()
+        else:
+            parts = line.split()
 
         if not parts:
             continue
 
-        match parts[0].lower():
-            case "shutdown":
-                break
+        cmd = parts[0].lower()
+        args = parts[1:]
 
-            case "pwd":
-                print(TEXT + fs.pwd())
+        handler = COMMANDS.get(cmd)
+        if not handler:
+            console.print(f"{cmd}: command not found", style=ERROR)
+            continue
 
-            case "ls":
-                try:
-                    for name in fs.ls(parts[1] if len(parts) > 1 else None):
-                        print(name)
-                except NotADirectoryError:
-                    print(ERROR + "ls: not a directory")
-                except KeyError:
-                    print(ERROR + "ls: no such file or directory")
+        try:
+            result = handler(ctx, args)
 
-            case "cd":
-                if len(parts) < 2:
-                    print(ERROR + "cd: missing operand")
-                    continue
-                try:
-                    fs.cd(parts[1])
-                except NotADirectoryError:
-                    print(ERROR + "cd: not a directory")
-                except KeyError:
-                    print(ERROR + "cd: no such file or directory")
+            if isinstance(result, tuple):
+                styled, plain = result
+            else:
+                styled = plain = result
 
-            case "cat":
-                if len(parts) < 2:
-                    print(ERROR + "cat: missing operand")
-                    continue
-                try:
-                    print(TEXT + fs.cat(parts[1]))
-                except IsADirectoryError:
-                    print(ERROR + "cat: is a directory")
-                except KeyError:
-                    print(ERROR + "cat: no such file")
+        except ShellExit:
+            break
 
-            case "mkdir":
-                if len(parts) < 2:
-                    print(ERROR + "mkdir: missing operand")
-                    continue
-                try:
-                    fs.mkdir(parts[1])
-                except FileExistsError:
-                    print(ERROR + "mkdir: file exists")
-                except KeyError:
-                    print(ERROR + "mkdir: invalid path")
-
-            case "touch":
-                if len(parts) < 2:
-                    print(ERROR + "touch: missing operand")
-                    continue
-                try:
-                    fs.touch(parts[1])
-                except KeyError:
-                    print(ERROR + "touch: invalid path")
-            
-            case "rm":
-                if len(parts) < 2:
-                    print(ERROR + "rm: missing operand")
-                    continue
-                try:
-                    fs.rm(parts[1])
-                except IsADirectoryError:
-                    print(ERROR + "rm: is a directory")
-                except KeyError:
-                    print(ERROR + "rm: no such file")
-
-            case "rmdir":
-                if len(parts) < 2:
-                    print(ERROR + "rmdir: missing operand")
-                    continue
-                try:
-                    fs.rmdir(parts[1])
-                except NotADirectoryError:
-                    print(ERROR + "rmdir: not a directory")
-                except KeyError:
-                    print(ERROR + "rmdir: no such directory")
-                except OSError:
-                    print(ERROR + "rmdir: directory not empty")
-
-            case "help":
-                print(TEXT + "Available commands:")
-                print(MUTED + "  pwd        print working directory")
-                print(MUTED + "  ls         list directory contents")
-                print(MUTED + "  cd         change directory")
-                print(MUTED + "  cat        display file contents")
-                print(MUTED + "  mkdir      create directory")
-                print(MUTED + "  touch      create empty file")
-                print(MUTED + "  rm         remove file")
-                print(MUTED + "  rmdir      remove empty directory")
-                print(MUTED + "  help       show this message")
-                print(MUTED + "  shutdown   power off NyxOS")
-
-            case _:
-                print(ERROR + f"{parts[0]}: command not found")
+        # --- output handling ---
+        if redirect_target:
+            if result is None:
+                console.print("redirect: no output", style=ERROR)
+            else:
+                ctx.fs.write_file(redirect_target, plain)
+        else:
+            if result is not None:
+                console.print(styled)

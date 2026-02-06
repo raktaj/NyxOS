@@ -90,14 +90,20 @@ class FileSystem:
             parent[name] = ""
             self._save()
             
-    def rm(self, path):
+    def rm(self, path, recurse=False):
         parent, name = self._resolve_parent(path)
 
         if name not in parent:
             raise KeyError(path)
 
-        if isinstance(parent[name], dict):
-            raise IsADirectoryError(path)
+        node = parent[name]
+
+        if isinstance(node, dict):
+            if not recurse:
+                raise IsADirectoryError(path)
+            del parent[name]
+            self._save()
+            return
 
         del parent[name]
         self._save()
@@ -118,3 +124,11 @@ class FileSystem:
 
         del parent[name]
         self._save()
+    
+    def write_file(self, path, content):
+        parent, name = self._resolve_parent(path)
+        parent[name] = content
+        self._save()
+    
+    def get_node(self, path=None):
+        return self._resolve(path or self.cwd)

@@ -1,0 +1,2 @@
+class ShellExit(Exception):
+    pass
