@@ -7,7 +7,7 @@ from rich.panel import Panel
 from rich.console import Console
 from rich.align import Align
 
-from theme import BANNER, SUCCESS, ERROR
+from themer import themer
 from auth import get_user, verify_password
 from shell import run_shell
 
@@ -23,7 +23,7 @@ def boot():
 
     panel = Panel(
         banner_text,
-        border_style=BANNER,
+        border_style=themer.rich("banner"),
         expand=False
     )
 
@@ -35,7 +35,7 @@ def login():
     try:
         user = get_user(username)
     except KeyError:
-        console.print("Unknown user", style=ERROR)
+        console.print("Unknown user", style=themer.rich("error"))
         sys.exit(1)
 
     password = getpass.getpass("Password: ")
@@ -45,10 +45,10 @@ def login():
         user["salt"],
         user["hash"]
     ):
-        console.print("Login failed!", style=ERROR)
+        console.print("Login failed!", style=themer.rich("error"))
         sys.exit(1)
 
-    console.print("Login successful!", style=SUCCESS)
+    console.print("Login successful!", style=themer.rich("success"))
     return username
 
 def main():

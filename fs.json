@@ -1,15 +1,52 @@
 {
   "/": {
-    "home": {
-      "root": {
-        "readme.txt": "Welcome to NyxOS."
+    "type": "dir",
+    "children": {
+      "home": {
+        "type": "dir",
+        "children": {
+          "root": {
+            "type": "dir",
+            "children": {
+              "readme.txt": {
+                "type": "file",
+                "content": "Welcome to NyxOS.",
+                "owner": "root"
+              }
+            }
+          },
+          "demo": {
+            "type": "dir",
+            "children": {
+              "file.txt": {
+                "type": "file",
+                "content": "",
+                "owner": "root"
+              }
+            }
+          }
+        }
+      },
+      "etc": {
+        "type": "dir",
+        "children": {
+          "motd": {
+            "type": "file",
+            "content": "NyxOS v0.3 'Penumbra'",
+            "owner": "root"
+          }
+        }
+      },
+      "bin": {
+        "type": "dir",
+        "children": {
+          "echo": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root"
+          }
+        }
       }
-    },
-    "etc": {
-      "motd": "NyxOS v0.2 'Umbra'"
-    },
-    "bin": {
-      "echo": "builtin"
     }
   }
 }

@@ -1,0 +1,46 @@
+{
+  "banner": {
+    "rich": "bold magenta",
+    "prompt": "fg:ansimagenta bold"
+  },
+  "prompt_user": {
+    "rich": "bold cyan",
+    "prompt": "fg:ansicyan bold"
+  },
+  "cwd_parent": {
+    "rich": "magenta",
+    "prompt": "fg:ansimagenta"
+  },
+  "cwd_current": {
+    "rich": "bold magenta",
+    "prompt": "fg:ansimagenta bold"
+  },
+  "cwd_sep": {
+    "rich": "magenta",
+    "prompt": "fg:ansimagenta"
+  },
+  "error": {
+    "rich": "bold red",
+    "prompt": "fg:ansired bold"
+  },
+  "success": {
+    "rich": "bold green",
+    "prompt": "fg:ansigreen bold"
+  },
+  "text": {
+    "rich": "white",
+    "prompt": "fg:ansiwhite"
+  },
+  "muted": {
+    "rich": "bright_black",
+    "prompt": "fg:ansibrightblack"
+  },
+  "dir": {
+  "rich": "bold blue",
+  "prompt": "fg:ansiblue bold"
+  },
+  "file": {
+    "rich": "white",
+    "prompt": "fg:ansiwhite"
+  }
+}

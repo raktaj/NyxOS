@@ -1,3 +1,5 @@
+# helpdata.py
+
 HELP_ENTRIES = [
     ("pwd",      "print working directory"),
     ("ls",       "list directory contents"),

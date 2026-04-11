@@ -1,14 +1,20 @@
 # auth.py
 import json
 import os
+# auth.py
+
 import hashlib
+import hmac
 
 USERS_DB = "users.json"
 
 def get_user(username):
-    with open(USERS_DB, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    return data[username]
+    try:
+        with open(USERS_DB, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data[username]
+    except FileNotFoundError:
+        raise RuntimeError("User database missing")
 
 def hash_password(password: str):
     salt = os.urandom(16)
@@ -28,4 +34,4 @@ def verify_password(password, salt_hex, hash_hex):
         salt,
         100_000
     )
-    return key.hex() == hash_hex
+    return hmac.compare_digest(key.hex(), hash_hex)

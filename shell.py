@@ -1,89 +1,108 @@
 from rich.console import Console
-from rich.text import Text
+from prompt_toolkit import prompt as prompt_input
+from prompt_toolkit.formatted_text import FormattedText
 
-from theme import PROMPT, ERROR, CWD_PARENT, CWD_CURRENT, CWD_SEP
+import shlex
+
+from themer import format_cwd, themer
 from commands import COMMANDS
-from context import CommandContext
+from contracts import CommandContext, CommandOutput
 from fs import FileSystem
 from shell_exceptions import ShellExit
 
 console = Console()
 fs = FileSystem()
 
-def format_cwd(path):
-    text = Text()
-    parts = [p for p in path.split("/") if p]
-
-    if not parts:
-        text.append("/", style=CWD_CURRENT)
-        return text
-
-    # Parent path
-    if len(parts) > 1:
-        for part in parts[:-1]:
-            text.append("/", style=CWD_SEP)
-            text.append(part, style=CWD_PARENT)
-        text.append("/", style=CWD_SEP)
-    else:
-        text.append("/", style=CWD_SEP)
-
-    # Current dir
-    text.append(parts[-1], style=CWD_CURRENT)
-    return text
-
-def prompt(username, cwd):
-    console.print(f"{username}@NyxOS", style=PROMPT, end="")
-    console.print(format_cwd(cwd), end="")
+def build_prompt(username, cwd):
     symbol = "#" if username == "root" else "$"
-    return console.input(f"{symbol} ")
+
+    formatted = []
+
+    # Username
+    formatted.append((themer.prompt("prompt_user"), f"{username}@NyxOS"))
+
+    # CWD (delegated)
+    cwd_parts = format_cwd(cwd, themer, engine="prompt")
+    formatted.extend(cwd_parts)
+
+    # Symbol
+    formatted.append(("", f"{symbol} "))
+
+    return FormattedText(formatted)
+
+def parse_command(line):
+    try:
+        tokens = shlex.split(line)
+    except ValueError as e:
+        console.print(f"parse error: {e}", style=themer.rich("error"))
+        return None, None, None
+
+    if not tokens:
+        return None, None, None
+
+    redirect_target = None
+    clean_tokens = []
+
+    it = iter(tokens)
+    for token in it:
+        if token == ">":
+            try:
+                redirect_target = next(it)
+            except StopIteration:
+                console.print("redirect: missing target", style=themer.rich("error"))
+                return None, None, None
+            break
+        else:
+            clean_tokens.append(token)
+
+    cmd = clean_tokens[0]
+    args = clean_tokens[1:]
+    return cmd, args, redirect_target
+
 
 def run_shell(username):
-    ctx = CommandContext(
-        fs=fs,
-        console=console,
-        username=username
-    )
+    ctx = CommandContext(fs=fs, username=username)
 
     while True:
-        line = prompt(username, fs.pwd())
+        prompt_fmt = build_prompt(username, fs.pwd())
+        line = prompt_input(prompt_fmt)
 
-        # --- parse redirection ---
-        redirect_target = None
-        if ">" in line:
-            command_part, _, redirect_target = line.partition(">")
-            redirect_target = redirect_target.strip()
-            parts = command_part.split()
-        else:
-            parts = line.split()
-
-        if not parts:
+        cmd, args, redirect_target = parse_command(line)
+        if not cmd:
             continue
-
-        cmd = parts[0].lower()
-        args = parts[1:]
 
         handler = COMMANDS.get(cmd)
         if not handler:
-            console.print(f"{cmd}: command not found", style=ERROR)
+            console.print(f"{cmd}: command not found", style=themer.rich("error"))
             continue
 
         try:
             result = handler(ctx, args)
-
-            if isinstance(result, tuple):
-                styled, plain = result
-            else:
-                styled = plain = result
-
         except ShellExit:
             break
 
-        # --- output handling ---
+        if result is None:
+            continue
+
+        if not isinstance(result, CommandOutput):
+            result = CommandOutput.text(str(result))
+
+        # special clear handling
+        if result.styled == "__CLEAR__":
+            console.clear()
+            continue
+
+        # error handling
+        if result.error:
+            console.print(result.styled, style=themer.rich("error"))
+            continue
+
+        # redirection
         if redirect_target:
-            if result is None:
-                console.print("redirect: no output", style=ERROR)
+            if result.plain is None:
+                console.print("redirect: no output", style=themer.rich("error"))
             else:
-                ctx.fs.write_file(redirect_target, plain)
+                fs.write_file(redirect_target, result.plain)
         else:
-            if result is not None:
-                console.print(styled)
+            if result.styled is not None:
+                console.print(result.styled)

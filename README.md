@@ -1,48 +1,41 @@
 # NyxOS
 
-**NyxOS v0.2 “Umbra”**  
+![Version](https://img.shields.io/badge/version-v0.3%20Penumbra-c253bc)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-active%20development-orange)
+
+**NyxOS v0.3 “Penumbra”**  
 A terminal-based OS / VM simulation written in Python.
 
-NyxOS simulates a UNIX-like environment with a virtual filesystem, interactive shell, and persistent state, focusing on structure, aesthetics, and extensibility rather than realism.
+---
+
+## Overview
+
+NyxOS simulates a UNIX-like environment with a virtual filesystem, interactive shell, and persistent state.  
+The project prioritizes **clean architecture, aesthetics, and extensibility** over strict realism.
 
 ---
 
 ## Features
-- UNIX-like shell
+
+- UNIX-like interactive shell
 - JSON-backed virtual filesystem
-- Persistent state
-- Basic user model
+- Persistent system state
+- Basic user authentication model
 - Rich-powered terminal UI
-- Dark, minimal aesthetic
-
----
-
-## What’s New in v0.2 “Umbra”
-- Modular command system (commands decoupled from shell logic)
-- Command context abstraction (`CommandContext`)
-- Output redirection (`>`) support
-- Depth-limited `tree` command with Rich rendering
-- Enhanced filesystem commands (`rm -r`, improved errors)
-- `neofetch` command with full ASCII logo and system info
-- Improved prompt rendering and theming
-- Cleaner internal architecture for future expansion (piping, scripting)
+- Engine-agnostic theming system
+- Modular command architecture
 
 ---
 
 ## Status
-Active development (v0.2).  
+
+Active development (v0.3).  
 Core systems are stabilizing, but APIs and behavior may still change.
 
 ---
 
-## Roadmap (High-level)
-- Command piping (`|`)
-- Scripting / batch execution
-- Permissions and ownership
-- Process simulation
-- Expanded system introspection
-
----
-
 ## License
+
 MIT License
