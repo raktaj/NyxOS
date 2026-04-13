@@ -69,7 +69,6 @@ def cmd_ls(ctx, args):
             return CommandOutput.err("ls: not a directory")
 
         children = node["children"]
-        items = sorted(children.items(), key=lambda x: x[1]["type"] == "file")
         items = sorted(
             children.items(),
             key=lambda x: (x[1]["type"] == "file", x[0])
