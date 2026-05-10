@@ -1,27 +1,37 @@
 {
   "/": {
     "type": "dir",
+    "owner": "root",
+    "mode": "rw",
     "children": {
       "home": {
         "type": "dir",
+        "owner": "root",
+        "mode": "rw",
         "children": {
           "root": {
             "type": "dir",
+            "owner": "root",
+            "mode": "rw",
             "children": {
               "readme.txt": {
                 "type": "file",
                 "content": "Welcome to NyxOS.",
-                "owner": "root"
+                "owner": "root",
+                "mode": "rw"
               }
             }
           },
           "demo": {
             "type": "dir",
+            "owner": "root",
+            "mode": "rw",
             "children": {
               "file.txt": {
                 "type": "file",
                 "content": "",
-                "owner": "root"
+                "owner": "root",
+                "mode": "rw"
               }
             }
           }
@@ -29,23 +39,41 @@
       },
       "etc": {
         "type": "dir",
+        "owner": "root",
+        "mode": "rw",
         "children": {
           "motd": {
             "type": "file",
-            "content": "NyxOS v0.3 'Penumbra'",
-            "owner": "root"
+            "content": "NyxOS v0.4 'Obscura'",
+            "owner": "root",
+            "mode": "r"
           }
         }
       },
       "bin": {
         "type": "dir",
+        "owner": "root",
+        "mode": "r",
         "children": {
           "echo": {
             "type": "file",
             "content": "builtin",
-            "owner": "root"
+            "owner": "root",
+            "mode": "r"
           }
         }
+      },
+      "tmp": {
+        "type": "dir",
+        "owner": "root",
+        "mode": "rw",
+        "children": {}
+      },
+      "var": {
+        "type": "dir",
+        "owner": "root",
+        "mode": "rw",
+        "children": {}
       }
     }
   }

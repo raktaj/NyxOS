@@ -7,17 +7,19 @@ from rich.panel import Panel
 from rich.console import Console
 from rich.align import Align
 
-from themer import themer
-from auth import get_user, verify_password
+from commands import load_commands
+from fs import FileSystem
+from storage import JSONStorage, MemoryStorage
+from themer import Themer
+from auth import UserStore, verify_password
 from shell import run_shell
+from boot import BootConfig
 
-console = Console()
-
-def boot():
+def boot(console: Console, themer: Themer, hostname: str):
     console.clear()
 
     banner_text = Align.center(
-        "NyxOS v0.2\nUmbra",
+        f"{hostname}v0.4\nObscura",
         vertical="middle"
     )
 
@@ -29,11 +31,11 @@ def boot():
 
     console.print(panel, justify="center")
 
-def login():
+def login(console, themer, user_store):
     username = console.input("Username: ")
 
     try:
-        user = get_user(username)
+        user = user_store.get(username)
     except KeyError:
         console.print("Unknown user", style=themer.rich("error"))
         sys.exit(1)
@@ -52,9 +54,18 @@ def login():
     return username
 
 def main():
-    boot()
-    user = login()
-    run_shell(user)
+    cfg = BootConfig.load()
+
+    console = Console()
+    themer = Themer(cfg.theme)
+    user_store = UserStore(cfg.users_db)
+    storage = MemoryStorage() if cfg.initramfs else JSONStorage(cfg.ramfile)
+
+    boot(console, themer, cfg.hostname)
+    commands = load_commands()
+    user = login(console, themer, user_store)
+    fs = FileSystem(storage, user)
+    run_shell(user, fs, themer, commands, user_store)
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,10 @@
+# themer.py
+
 import json
 from pathlib import Path
 from rich.style import Style
 from rich.text import Text
+from typing import overload, Literal
 
 class Themer:
     def __init__(self, theme_path="themes.json"):
@@ -39,7 +42,26 @@ class Themer:
     def get(self, name, engine):
         return self.theme[name][engine]
 
-def format_cwd(cwd, themer, engine="rich"):
+@overload
+def format_cwd(
+    cwd: str,
+    themer: Themer,
+    engine: Literal["prompt"]
+) -> list[tuple[str, str]]: ...
+
+@overload
+def format_cwd(
+    cwd: str,
+    themer: Themer,
+    engine: Literal["rich"]
+) -> Text: ...
+
+def format_cwd(
+    cwd: str,
+    themer: Themer,
+    engine: Literal["prompt", "rich"] = "rich"
+) -> Text | list[tuple[str, str]]:
+
     parts = [p for p in cwd.split("/") if p]
 
     if engine == "rich":
@@ -70,6 +92,7 @@ def format_cwd(cwd, themer, engine="rich"):
 
         formatted.append((themer.prompt("cwd_current"), f"/{parts[-1]}"))
         return formatted
+    else:
+        raise ValueError(f"Unknown engine: {engine}")
 
-# global instance
 themer = Themer()
