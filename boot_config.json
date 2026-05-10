@@ -1,0 +1,7 @@
+{
+	"initramfs": false,
+	"ramfile": "fs.json",
+	"theme": "themes.json",
+	"users_db": "users.json",
+	"hostname": "NyxOS"
+}
