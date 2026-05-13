@@ -14,6 +14,8 @@ class FileSystem:
     # Internal Helpers
 
     def _normalize(self, path):
+        path = path.replace("~", f"/home/{self.username}") # Expands ~ to current user home directory 
+
         if path.startswith("/"):
             parts = path.strip("/").split("/")
         else:
@@ -248,3 +250,10 @@ class FileSystem:
         node = self._resolve(path or self.cwd)
         Permission.from_node(node).check_read(self.username, path or self.cwd)
         return node
+
+    def exists(self, path: str) -> bool:
+        try:
+            self._resolve(path)
+            return True
+        except (NoSuchFile, NotADirectory):
+            return False

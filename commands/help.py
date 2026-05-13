@@ -1,7 +1,7 @@
 # commands/help.py
 
 from contracts import CommandOutput
-from .registry import command, COMMANDS
+from .registry import command, registry
 from rich.text import Text
 
 
@@ -11,7 +11,7 @@ def cmd_help(ctx, args):
     text.append("Available commands:\n")
 
     # Deduplicate commands (handle aliases)
-    unique_cmds = {id(cmd): cmd for cmd in COMMANDS.values()}
+    unique_cmds = {id(cmd): cmd for cmd in registry.values()}
 
     # Compute alignment width
     max_len = max(len(", ".join(cmd.names)) for cmd in unique_cmds.values())

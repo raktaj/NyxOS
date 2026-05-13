@@ -19,7 +19,7 @@ def boot(console: Console, themer: Themer, hostname: str):
     console.clear()
 
     banner_text = Align.center(
-        f"{hostname}v0.4\nObscura",
+        f"{hostname}v0.5\nNoctis",
         vertical="middle"
     )
 
@@ -51,7 +51,22 @@ def login(console, themer, user_store):
         sys.exit(1)
 
     console.print("Login successful!", style=themer.rich("success"))
+
     return username
+
+def seed_bin(fs: FileSystem, commands):
+    original_user = fs.username
+    fs.username = "root"
+    for name, cmd in commands.items():
+        path = f"/bin/{name}"
+        if not fs.exists(path):
+            fs.write_file(path, "builtin")
+            node = fs._resolve(path)
+            node["mode"] = "r"
+            node["owner"] = "root"
+    fs.username = original_user
+    fs._save()
+
 
 def main():
     cfg = BootConfig.load()
@@ -60,11 +75,16 @@ def main():
     themer = Themer(cfg.theme)
     user_store = UserStore(cfg.users_db)
     storage = MemoryStorage() if cfg.initramfs else JSONStorage(cfg.ramfile)
-
+    
     boot(console, themer, cfg.hostname)
     commands = load_commands()
     user = login(console, themer, user_store)
-    fs = FileSystem(storage, user)
+    fs = FileSystem(storage, username=user)
+    seed_bin(fs, commands)
+
+    if fs.exists("/etc/motd"):
+        console.print(fs.cat("/etc/motd"))
+
     run_shell(user, fs, themer, commands, user_store)
 
 if __name__ == "__main__":

@@ -1,10 +1,14 @@
 # commands/neofetch.py
 
+from rich.text import Text
+from rich.columns import Columns
+from rich.padding import Padding
+
+from shutil import get_terminal_size
+
 from contracts import CommandOutput
 from .registry import command
 
-from rich.text import Text
-from rich.columns import Columns
 
 @command("neofetch", help="show system information", usage="neofetch")
 def cmd_neofetch(ctx, args):
@@ -17,29 +21,39 @@ def cmd_neofetch(ctx, args):
 ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝[/]
 """
 
-    # Expanded info (but still minimal and controlled)
     info = [
-        ("OS", "NyxOS"),
-        ("User", ctx.username),
-        ("Shell", "nsh"),
-        ("Kernel", "nyx-kernel 0.3"),
-        ("Theme", "Nyx Magenta"),
-        ("FS", "jsonfs"),
+        ("OS",     "NyxOS"),
+        ("User",   ctx.username),
+        ("Shell",  "nsh"),
+        ("Kernel", "nyx-kernel 0.4"),
+        ("Theme",  "Nyx Magenta"),
+        ("FS",     "jsonfs"),
     ]
 
-    # Align keys
     max_key = max(len(k) for k, _ in info)
-    info_lines = [
-        f"[bold]{k.ljust(max_key)}[/]: {v}"
+    info_lines = "\n".join(
+        f"[bold]{k.ljust(max_key)}[/]  {v}"
         for k, v in info
-    ]
+    )
 
-    # Styled (side-by-side layout)
+    # pad info vertically to center it against the 6-line logo
+    logo_lines = 6
+    info_line_count = len(info)
+    top_pad = (logo_lines - info_line_count) // 2
+
     logo_render = Text.from_markup(logo)
-    info_render = Text.from_markup("\n".join(info_lines))
-    styled = Columns([logo_render, info_render])
+    info_render = Padding(
+        Text.from_markup(info_lines),
+        (top_pad, 0, 0, 4)
+    )
 
-    # Plain (for redirection)
+    term_width = get_terminal_size().columns
+    logo_width = 46
+
+    if term_width < logo_width + 30:
+        styled = Text.from_markup(logo + "\n" + info_lines)
+    else:
+        styled = Columns([logo_render, info_render])
+
     plain = "\n".join(f"{k}: {v}" for k, v in info)
-
     return CommandOutput(styled=styled, plain=plain)

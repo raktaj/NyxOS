@@ -31,7 +31,7 @@ def build_prompt(username, cwd, themer):
     formatted.append((themer.prompt("prompt_user"), f"{username}@NyxOS"))
 
     # CWD
-    cwd_parts = format_cwd(cwd, themer, engine="prompt")
+    cwd_parts = format_cwd(cwd, themer, username, engine="prompt")
     formatted.extend(cwd_parts)
 
     # Symbol
@@ -69,7 +69,13 @@ def parse_command(line: str) -> tuple[Optional[str], list[str], Optional[str]]:
 
 def run_shell(username, fs, themer, commands, user_store):
     session = Session(username=username)
-    ctx = CommandContext(fs=fs, username=session.username, themer=themer, user_store=user_store)
+    ctx = CommandContext(
+        fs=fs, 
+        username=session.username, 
+        themer=themer, 
+        user_store=user_store, 
+        commands=commands
+    )
 
     while True:
         prompt_fmt = build_prompt(session.username, fs.pwd(), themer)
@@ -85,11 +91,20 @@ def run_shell(username, fs, themer, commands, user_store):
             continue
 
         # rebuild ctx if user has changed
-        ctx = CommandContext(fs=fs, username=session.username, themer=themer, user_store=user_store)
+        ctx = CommandContext(
+            fs=fs, 
+            username=session.username, 
+            themer=themer, 
+            user_store=user_store, 
+            commands=commands
+        )
 
         cmd_obj = commands.get(cmd)
         if not cmd_obj:
-            console.print(f"{cmd}: command not found", style=themer.rich("error"))
+            if ctx.fs.exists(f"/bin/{cmd}"):
+                console.print(f"{cmd}: not executable yet", style=themer.rich("error"))
+            else:
+                console.print(f"{cmd}: command not found", style=themer.rich("error"))
             continue
 
         if any(a in ("--help", "-h") for a in args):

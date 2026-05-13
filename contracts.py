@@ -1,11 +1,15 @@
 # contracts.py
 
+from __future__ import annotations
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from fs import FileSystem
-from themer import Themer
-from auth import UserStore
+if TYPE_CHECKING:
+    from commands.registry import CommandRegistry
+    from fs import FileSystem
+    from themer import Themer
+    from auth import UserStore
+
 
 @dataclass
 class CommandContext:
@@ -13,12 +17,13 @@ class CommandContext:
     username: str
     themer: Themer
     user_store: UserStore
+    commands: CommandRegistry
+
 
 @dataclass
 class CommandOutput:
     styled: Any = None
     plain: str | None = None
-    error: bool = False
 
     @staticmethod
     def text(s: str):

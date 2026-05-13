@@ -46,6 +46,7 @@ class Themer:
 def format_cwd(
     cwd: str,
     themer: Themer,
+    username: str,
     engine: Literal["prompt"]
 ) -> list[tuple[str, str]]: ...
 
@@ -53,46 +54,51 @@ def format_cwd(
 def format_cwd(
     cwd: str,
     themer: Themer,
+    username: str,
     engine: Literal["rich"]
 ) -> Text: ...
 
 def format_cwd(
     cwd: str,
     themer: Themer,
+    username: str,
     engine: Literal["prompt", "rich"] = "rich"
 ) -> Text | list[tuple[str, str]]:
+    home = f"/home/{username}"
+    if cwd.startswith(home):
+        cwd = "~" + cwd[len(home):]
 
-    parts = [p for p in cwd.split("/") if p]
+    # split carefully — ~ is its own root segment
+    if cwd.startswith("~"):
+        parts = ["~"] + [p for p in cwd[1:].strip("/").split("/") if p]
+    else:
+        parts = [p for p in cwd.strip("/").split("/") if p]
 
     if engine == "rich":
         text = Text()
-
         if not parts:
             text.append("/", style=themer.rich("cwd_current"))
             return text
-
         for part in parts[:-1]:
-            text.append("/", style=themer.rich("cwd_sep"))
             text.append(part, style=themer.rich("cwd_parent"))
-
-        text.append("/", style=themer.rich("cwd_sep"))
+            text.append("/", style=themer.rich("cwd_sep"))
         text.append(parts[-1], style=themer.rich("cwd_current"))
-
         return text
 
     elif engine == "prompt":
         formatted = []
-
         if not parts:
             formatted.append((themer.prompt("cwd_current"), "/"))
             return formatted
-
         for part in parts[:-1]:
-            formatted.append((themer.prompt("cwd_parent"), f"/{part}"))
-
-        formatted.append((themer.prompt("cwd_current"), f"/{parts[-1]}"))
+            if part == "~":
+                formatted.append((themer.prompt("cwd_parent"), part))
+            else:
+                formatted.append((themer.prompt("cwd_sep"), "/"))
+                formatted.append((themer.prompt("cwd_parent"), part))
+        if parts[-1] == "~":
+            formatted.append((themer.prompt("cwd_current"), parts[-1]))
+        else:
+            formatted.append((themer.prompt("cwd_sep"), "/"))
+            formatted.append((themer.prompt("cwd_current"), parts[-1]))
         return formatted
-    else:
-        raise ValueError(f"Unknown engine: {engine}")
-
-themer = Themer()

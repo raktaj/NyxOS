@@ -55,7 +55,145 @@
         "owner": "root",
         "mode": "r",
         "children": {
+          "cat": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "cd": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "chmod": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "clear": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "cp": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
           "echo": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "exit": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "shutdown": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "quit": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "help": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "ls": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "mkdir": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "mv": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "neofetch": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "passwd": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "pwd": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "rm": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "rmdir": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "su": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "touch": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "tree": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "useradd": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "which": {
+            "type": "file",
+            "content": "builtin",
+            "owner": "root",
+            "mode": "r"
+          },
+          "whoami": {
             "type": "file",
             "content": "builtin",
             "owner": "root",

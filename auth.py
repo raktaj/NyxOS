@@ -34,6 +34,14 @@ class UserStore:
         self._users[username] = {"salt": salt, "hash": key}
         self._persist()
 
+    def delete_user(self, username: str):
+        if username not in self._users:
+            raise KeyError(f"Unknown user: {username}")
+        if username == "root":
+            raise RuntimeError("cannot delete root")
+        del self._users[username]
+        self._persist()
+
     def change_password(self, username: str, new_password: str):
         if username not in self._users:
             raise KeyError(f"Unknown user: {username}")

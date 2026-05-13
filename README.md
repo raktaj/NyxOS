@@ -1,10 +1,10 @@
 # NyxOS
-![Version](https://img.shields.io/badge/version-v0.4%20Obscura-c253bc)
+![Version](https://img.shields.io/badge/version-v0.5%20Noctis-c253bc)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-active%20development-orange)
 
-**NyxOS v0.4 "Obscura"**
+**NyxOS v0.5 "Noctis"**
 A terminal-based OS / VM simulation written in Python.
 
 ---
@@ -56,14 +56,16 @@ The project prioritizes **clean architecture, aesthetics, and extensibility** ov
 | `su` | Switch user |
 | `touch` | Create empty file |
 | `tree` | Display directory tree |
+| `userdel` | Delete a user |
 | `useradd` | Create a new user |
+| `which` | Locate a command |
 | `whoami` | Show current user |
 
 ---
 
 ## Boot Configuration
 
-NyxOS reads from `boot_config.json` on startup. 
+NyxOS reads from `boot_config.json` on startup. Ships with sensible defaults:
 
 ```json
 {
@@ -81,7 +83,7 @@ Setting `initramfs` to `true` runs NyxOS with an ephemeral in-memory filesystem 
 
 ## Status
 
-Active development (v0.4).
+Active development (v0.5).
 Core systems are stabilizing, but APIs and behavior may still change.
 
 ---

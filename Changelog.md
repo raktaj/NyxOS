@@ -4,6 +4,34 @@ All notable changes to NyxOS will be documented in this file.
 
 ---
 
+## [v0.5] "Noctis"
+
+### Added
+- `CommandRegistry` class — wraps command dict, injectable and typed, replaces global `COMMANDS` dict
+- `/bin` abstraction — `seed_bin()` mirrors the registry into `/bin` on startup, syncing only missing entries
+- `/bin` fallback in shell — unknown commands check `/bin` before reporting "command not found"
+- `which` command — resolves a command name to its `/bin` path
+- `fs.exists()` helper — non-throwing path existence check
+- `path` field on `Command` dataclass — set automatically to `/bin/<primary_name>` on registration
+- `commands` field on `CommandContext` — registry accessible from within commands
+- `~` expansion in `fs._normalize()` — expands to `/home/<username>` transparently across all FS operations
+- `~` compression in prompt — `/home/<username>` displays as `~` in the shell prompt
+- `userdel` command — delete a user and their home directory (root only, cannot delete root or current user)
+- `delete_user()` method on `UserStore` — guards against deleting root at the data layer
+
+### Changed
+- `load_commands()` returns `CommandRegistry` instead of raw dict
+- `format_cwd` updated to handle `~` as a root segment with correct separator rendering
+- `neofetch` info panel vertically centered against logo with padding
+- `neofetch` falls back to stacked layout on narrow terminals
+- `fs` constructed with correct username from the start — no more temporary root workaround
+
+### Fixed
+- Missing leading `/` in prompt for non-home paths after `format_cwd` refactor
+- `mv.py` had wrong decorator registering `cp` instead of `mv`
+
+---
+
 ## [v0.4] "Obscura"
 
 ### Added
